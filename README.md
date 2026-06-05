@@ -44,15 +44,18 @@ atles/
 ├── Makefile                 # build, up, stop, dev, logs
 ├── .env
 └── .gitignore
+
+
 Per usar-ho:
 - make build — construeix les imatges
 - make up — engega tot (db, backend, frontend)
 - make stop — apaga
 - make dev — engega amb logs en primer pla
 
+Executa npm install dins de frontend/ per generar el package-lock.json, després torna a fer make build.
 
 Amb make up o make dev:
-- Frontend (Vue): http://localhost:80
+- Frontend (Vue): http://localhost:3000
 - Backend API (Flask): http://localhost:5000/api/
 - Swagger UI (Flask-RESTx): http://localhost:5000/api/ (el mateix, RESTx genera la documentació automàtica)
 - Base de dades (PostGIS): localhost:5432 (usuari atles, password atles_dev, bd atles)

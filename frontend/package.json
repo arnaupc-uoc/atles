@@ -14,7 +14,7 @@
     "pinia": "^3.0.2",
     "vuetify": "^3.7.19",
     "leaflet": "^1.9.4",
-    "vue-leaflet": "^0.10.1",
+    "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@mdi/font": "^7.4.47"
   },
   "devDependencies": {
