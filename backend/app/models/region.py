@@ -9,5 +9,24 @@ class Region(db.Model):
     name = db.Column(db.String(200), nullable=False)
     region_type = db.Column(db.String(50), nullable=False)
     geometry = db.Column(Geometry(geometry_type="MULTIPOLYGON", srid=4326))
-    parent_id = db.Column(db.Integer, db.ForeignKey("regions.id"), nullable=True)
-    parent = db.relationship("Region", remote_side="Region.id", backref="children")
+    parent_id = db.Column(
+        db.Integer,
+        db.ForeignKey("regions.id"),
+        nullable=True,
+    )
+    parent = db.relationship(
+        "Region",
+        remote_side="Region.id",
+        backref="children",
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "region_type": self.region_type,
+            "geometry": str(self.geometry)
+            if self.geometry is not None
+            else None,
+            "parent_id": self.parent_id,
+        }
