@@ -8,10 +8,10 @@ from flask_restx import Api
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
-api = Api()
+api = Api(prefix="/api", doc="/api")
 
 
-# 🚨 2. AFEGEIX EL USER_LOADER AQUÍ DALT:
+# User loader per Flask-Login
 @login.user_loader
 def load_user(user_id):
     # Importem el model d'usuari aquí a dins per evitar "importacions circulars"
@@ -20,7 +20,7 @@ def load_user(user_id):
     # Busquem l'usuari a la base de dades utilitzant el seu ID (convertit a enter)
     return db.session.get(User, int(user_id))
 
-
+# Funció per crear l'aplicació Flask
 def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
