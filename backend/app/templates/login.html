@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Atles Administració{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Iniciar sessió</h1>
+  {% if error %}
+  <div class="alert error">{{ error }}</div>
+  {% endif %}
+  <form method="post">
+    <label for="username">Usuari</label>
+    <input id="username" name="username" type="text" required autofocus />
+
+    <label for="password">Contrasenya</label>
+    <input id="password" name="password" type="password" required />
+
+    <button class="button" type="submit">Entrar</button>
+  </form>
+  <p style="margin-top: 1rem; color: #4b5563;">Usuari per defecte: <strong>admin</strong> / contrasenya: <strong>admin</strong></p>
+  <p style="margin-top: 0.5rem;"><a href="{{ url_for('admin.recover_password') }}">Has oblidat la contrasenya?</a></p>
+</div>
+{% endblock %}

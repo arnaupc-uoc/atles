@@ -27,11 +27,26 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
+    login.login_view = "admin.login"
+    login.login_message = "Cal iniciar sessió per accedir a l'eina d'administració."
+    login.login_message_category = "info"
     login.init_app(app)
     CORS(app)
     api.init_app(app)
 
     from app.routes import register_routes
     register_routes(api)
+
+    from app.routes.admin import admin_bp
+    app.register_blueprint(admin_bp)
+
+    from app.models.user import User
+    with app.app_context():
+        db.create_all()
+        if not db.session.query(User).filter_by(username="admin").first():
+            admin_user = User(username="admin", email="admin@example.com")
+            admin_user.set_password("admin")
+            db.session.add(admin_user)
+            db.session.commit()
 
     return app

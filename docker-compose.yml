@@ -24,10 +24,19 @@ services:
         condition: service_healthy
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
-      FLASK_ENV: development
-      DATABASE_URL: postgresql://atles:atles_dev@db:5432/atles
-      SECRET_KEY: dev_secret_key_change_in_prod
+      - FLASK_ENV=${FLASK_ENV}
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - MAIL_SERVER=${MAIL_SERVER}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USE_TLS=${MAIL_USE_TLS}
+      - MAIL_USE_SSL=${MAIL_USE_SSL}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
 
   frontend:
     build: ./frontend

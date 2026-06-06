@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Eina d'administració - Atles{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Benvingut/da, {{ user.username }}</h1>
+  <p>Rol: <strong>{{ role }}</strong></p>
+  <p>Selecciona una secció per començar a gestionar el contingut.</p>
+</div>
+
+{% if sections %}
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+  {# Orden específic: regions, publicacions, autors, pàgines, usuaris #}
+  {% set order = ['Regions', 'Publicacions', 'Autors', 'Pàgines', 'Usuaris', 'Eines'] %}
+  {% for title in order %}
+    {% for section in sections %}
+      {% if section.title == title %}
+      <div class="card">
+        <h2>{{ section.title }}</h2>
+        <p>{{ section.description }}</p>
+        <a class="button" href="{{ section.path }}">Accedir</a>
+      </div>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="card">
+  <p>No tens accés a cap secció amb el teu rol actual.</p>
+</div>
+{% endif %}
+{% endblock %}

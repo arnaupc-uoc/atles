@@ -53,6 +53,27 @@ Per usar-ho:
 
 Executa npm install dins de frontend/ per generar el package-lock.json, després torna a fer make build.
 
+### Configuració d'entorn del backend
+
+El backend llegeix les variables d'entorn des de l'arxiu `.env` i les passa al contenidor Docker.
+
+Variables principals:
+
+- `DATABASE_URL` — URL de connexió a PostgreSQL
+- `SECRET_KEY` — clau secreta de Flask
+- `FLASK_ENV` — mode d'execució (`development` / `production`)
+
+Variables de correu per la recuperació de contrasenya:
+
+- `MAIL_SERVER` — servidor SMTP
+- `MAIL_PORT` — port SMTP
+- `MAIL_USE_TLS` — `true` o `false`
+- `MAIL_USE_SSL` — `true` o `false`
+- `MAIL_USERNAME` — usuari SMTP (opcional)
+- `MAIL_PASSWORD` — password SMTP (opcional)
+- `MAIL_DEFAULT_SENDER` — remitent dels correus, p. ex. `Atles <no-reply@example.com>`
+
+Hi ha un `.env.example` amb la configuració base que pots copiar a `.env` i adaptar. Per la producció, copia `.env.example` a `.env.production` i ajusta les credencials SMTP i secrets reals.
 Amb make up o make dev:
 
 - Frontend (Vue): http://localhost:3000

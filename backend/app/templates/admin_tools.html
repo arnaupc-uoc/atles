@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Eines - Atles Administració{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Eines</h1>
+  <p>Aquí hi haurà eines i utilitats per a administradors (exportacions, neteja, tasques programades, etc.).</p>
+  <p>Propera implementació: llistats d'eines i accions disponibles.</p>
+  <a class="button secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</a>
+</div>
+{% endblock %}

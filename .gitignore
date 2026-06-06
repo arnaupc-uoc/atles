@@ -9,4 +9,5 @@ dist/
 .vite/
 *.db
 .env
+.env.production
 *.pyc

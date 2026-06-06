@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Atles Administració{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>{{ title }}</h1>
+  <p>{{ description }}</p>
+  <p>Aquesta pàgina és un placeholder d'administració. Aquí es mostrarà la gestió de {{ title|lower }}.</p>
+  <a class="button secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</a>
+</div>
+{% endblock %}
