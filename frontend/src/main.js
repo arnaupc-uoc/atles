@@ -9,6 +9,7 @@ import "vuetify/styles";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import App from "./App.vue";
+import router from "./router"; // 👈 Importem el router des del fitxer extern
 
 // Corregir el path dels icons per defecte de Leaflet, ja que no es poden carregar correctament quan s'utilitza amb Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -25,11 +26,6 @@ const vuetify = createVuetify({
   components,
   directives,
   icons: { defaultSet: "mdi" },
-});
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [],
 });
 
 const app = createApp(App);

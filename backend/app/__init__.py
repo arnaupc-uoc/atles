@@ -11,6 +11,16 @@ login = LoginManager()
 api = Api()
 
 
+# 🚨 2. AFEGEIX EL USER_LOADER AQUÍ DALT:
+@login.user_loader
+def load_user(user_id):
+    # Importem el model d'usuari aquí a dins per evitar "importacions circulars"
+    from app.models import User
+
+    # Busquem l'usuari a la base de dades utilitzant el seu ID (convertit a enter)
+    return db.session.get(User, int(user_id))
+
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")

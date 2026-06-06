@@ -22,6 +22,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      - "5000:5000"
     environment:
       FLASK_ENV: development
       DATABASE_URL: postgresql://atles:atles_dev@db:5432/atles
@@ -32,6 +34,7 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+
 
 volumes:
   pgdata:

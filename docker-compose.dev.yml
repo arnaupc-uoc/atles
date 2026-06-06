@@ -1,6 +1,8 @@
 services:
   backend:
     command: python run.py
+    volumes:
+      - ./backend:/app
 
   frontend:
     build:

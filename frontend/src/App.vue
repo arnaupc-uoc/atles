@@ -5,13 +5,7 @@
     </v-app-bar>
 
     <v-main>
-      <l-map :zoom="13" :center="[41.3874, 2.1686]">
-        <l-tile-layer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          layer-type="base"
-          name="OpenStreetMap"
-        />
-      </l-map>
+      <router-view />
     </v-main>
 
     <v-footer app color="grey-lighten-1" density="compact">
@@ -24,13 +18,4 @@
 </template>
 
 <script setup>
-import "leaflet/dist/leaflet.css";
-import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 </script>
-
-<style scoped>
-.l-map {
-  height: calc(100vh - 112px);
-  width: 100%;
-}
-</style>
