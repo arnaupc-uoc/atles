@@ -4,16 +4,20 @@ export
 .PHONY: build up stop dev logs
 
 build:
-	docker compose --env-file .env build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 
 up:
-	docker compose --env-file .env up -d
+	docker compose --env-file .env -f docker-compose.yml -f docker-compose.dev.yml up
 
-stop:
-	docker compose --env-file .env down
+down:
+	docker compose --env-file .env -f docker-compose.yml -f docker-compose.dev.yml down
 
-dev:
-	docker compose --env-file .env up
+build-prod:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml build
 
-logs:
-	docker compose --env-file .env logs -f
+up-prod:
+	docker compose --env-file .env -f docker-compose.yml -f docker-compose.prod.yml up --build
+
+down-prod:
+	docker compose --env-file .env -f docker-compose.yml -f docker-compose.prod.yml down
+

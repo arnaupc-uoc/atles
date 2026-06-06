@@ -1,0 +1,15 @@
+services:
+  backend:
+    command: python run.py
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:5173" # <-- Mapeig per a desenvolupament (Vite)
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend

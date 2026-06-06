@@ -1,0 +1,12 @@
+services:
+  backend:
+    # A prod utilitza el CMD o ENTRYPOINT que hagis definit al seu Dockerfile original
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    restart: always

@@ -26,16 +26,10 @@ services:
       FLASK_ENV: development
       DATABASE_URL: postgresql://atles:atles_dev@db:5432/atles
       SECRET_KEY: dev_secret_key_change_in_prod
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./backend:/app
 
   frontend:
     build: ./frontend
     restart: unless-stopped
-    ports:
-      - "3000:80"
     depends_on:
       - backend
 
