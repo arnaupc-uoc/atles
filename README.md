@@ -48,10 +48,17 @@ Per usar-ho:
 
 - make build — construeix les imatges
 - make up — engega tot (db, backend, frontend)
+- make seed — genera un dataset de prova i crea un backup de la base de dades
 - make stop — apaga
 - make dev — engega amb logs en primer pla
 
 Executa npm install dins de frontend/ per generar el package-lock.json, després torna a fer make build.
+
+Per generar les dades d'exemple i crear un backup automàtic, has de tenir el clúster Docker en marxa i executar:
+
+- make seed
+
+Això crearà entre 10 i 20 registres de cada model, mantindrà l'usuari `admin/admin`, i generarà un fitxer de backup a `backend/backups/`.
 
 ### Configuració d'entorn del backend
 
@@ -100,3 +107,5 @@ make up --- gunicorn --- nginx (build) --> NO Hot reload
 make dev ---Flask dev server (debug=True) --- Vite dev server (HMR) --> SI Hot reload
 
 make dev exposa el frontend al port 3000 (mapejat al 5173 del Vite) i el backend al 5000, amb recàrrega automàtica en guardar fitxers.
+
+voldria crear un set de dades creades de forma aleatoria per als diferents models de dades, que contingui 20 elements de cadascun, amb els usuaris s'hauria de mantenir l'usuari admin admin, carregar-lo a la bbdd i fer-ne un backup per tenir-ho disponible per poder-ho recuperar.

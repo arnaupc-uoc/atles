@@ -11,4 +11,7 @@ dist/
 .env
 .env.production
 backend/backups/
+!backend/backups/
+!backend/backups/backup_empty*
+!backend/backups/backup_seed*
 *.pyc

@@ -9,6 +9,9 @@ build:
 up:
 	docker compose --env-file .env -f docker-compose.yml -f docker-compose.dev.yml up
 
+seed:
+	docker compose --env-file .env -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python seed_data.py
+
 down:
 	docker compose --env-file .env -f docker-compose.yml -f docker-compose.dev.yml down
 

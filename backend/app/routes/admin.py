@@ -398,8 +398,14 @@ def tools_backups_create():
     pg_dump = current_app.config.get("PG_DUMP_PATH", "pg_dump")
 
     try:
-        # Use pg_dump with DATABASE_URL
-        cmd = [pg_dump, db_url]
+        os.makedirs(backups_dir, exist_ok=True)
+
+        if not db_url:
+            current_app.logger.error("No database URL configured for backup creation")
+            flash("No s'ha pogut crear el backup: configuració de base de dades incorrecta.", "error")
+            return redirect(url_for("admin.tools_backups"))
+
+        cmd = [pg_dump, "--dbname", db_url]
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate(timeout=300)
         if proc.returncode != 0:
@@ -449,7 +455,12 @@ def tools_backups_restore():
     try:
         # Decompress and pipe to psql
         with gzip.open(path, "rb") as f:
-            proc = subprocess.Popen([psql, db_url], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen(
+                [psql, "--dbname", db_url],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
             stdout, stderr = proc.communicate(input=f.read(), timeout=600)
             if proc.returncode != 0:
                 current_app.logger.error("psql restore failed: %s", stderr.decode(errors='ignore'))
