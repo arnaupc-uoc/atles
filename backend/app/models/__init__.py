@@ -3,3 +3,4 @@ from app.models.publication import Publication
 from app.models.author import Author
 from app.models.user import User
 from app.models.page import Page
+from app.models.access_log import AccessLog

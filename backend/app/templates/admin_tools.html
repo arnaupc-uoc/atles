@@ -2,11 +2,38 @@
 
 {% block title %}Eines - Atles Administració{% endblock %}
 
+{% block breadcrumbs %}
+<nav class="breadcrumbs"><a href="{{ url_for('admin.home') }}">Inici</a><span>&gt;</span>Eines</nav>
+{% endblock %}
+
 {% block content %}
 <div class="card">
   <h1>Eines</h1>
-  <p>Aquí hi haurà eines i utilitats per a administradors (exportacions, neteja, tasques programades, etc.).</p>
-  <p>Propera implementació: llistats d'eines i accions disponibles.</p>
-  <a class="button secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</a>
+  <p>Accedeix a les eines i utilitats disponibles per a administradors.</p>
 </div>
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+  <div class="card">
+    <h2>Backups</h2>
+    <p>Crear, descarregar i restaurar còpies de seguretat de la base de dades.</p>
+    <a class="button" href="{{ url_for('admin.tools_backups') }}">Accedir</a>
+  </div>
+
+  <div class="card">
+    <h2>Accessos usuaris</h2>
+    <p>Veure registres d'accessos i auditories d'autenticació.</p>
+    <a class="button" href="{{ url_for('admin.tools_accessos') }}">Accedir</a>
+  </div>
+
+  <div class="card">
+    <h2>Logs</h2>
+    <p>Visualitzar i exportar els logs del sistema.</p>
+    <a class="button" href="{{ url_for('admin.tools_logs') }}">Accedir</a>
+  </div>
+</div>
+
+<div style="margin-top:1rem;">
+  <a class="button secondary" href="{{ url_for('admin.home') }}">Tornar a Eines</a>
+</div>
+
 {% endblock %}

@@ -10,4 +10,5 @@ dist/
 *.db
 .env
 .env.production
+backend/backups/
 *.pyc

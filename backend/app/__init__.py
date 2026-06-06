@@ -37,10 +37,31 @@ def create_app():
     from app.routes import register_routes
     register_routes(api)
 
+
     from app.routes.admin import admin_bp
     app.register_blueprint(admin_bp)
 
+    # Ensure logs directory and backups directory exist
+    import os
     from app.models.user import User
+
+    backups_dir = app.config.get("BACKUPS_DIR")
+    logs_dir = os.path.dirname(app.config.get("LOG_FILE"))
+    os.makedirs(backups_dir, exist_ok=True)
+    os.makedirs(logs_dir, exist_ok=True)
+
+    # Configure basic file logging if not already configured
+    import logging
+    if not app.logger.handlers:
+        handler = logging.FileHandler(app.config.get("LOG_FILE"))
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)s %(name)s: %(message)s"
+        )
+        handler.setFormatter(formatter)
+        handler.setLevel(logging.INFO)
+        app.logger.addHandler(handler)
+        app.logger.setLevel(logging.INFO)
+
     with app.app_context():
         db.create_all()
         if not db.session.query(User).filter_by(username="admin").first():

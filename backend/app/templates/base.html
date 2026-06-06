@@ -20,6 +20,9 @@
       form input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; margin-top: 0.5rem; }
       form label { display: block; margin-top: 1rem; font-weight: 600; }
       form button { margin-top: 1.25rem; }
+      .breadcrumbs { margin-bottom: 1rem; font-size: 0.95rem; color: #4b5563; }
+      .breadcrumbs a { color: #2563eb; text-decoration: none; }
+      .breadcrumbs span { margin: 0 0.5rem; }
     </style>
   </head>
   <body>
@@ -33,6 +36,7 @@
       {% for category, message in get_flashed_messages(with_categories=true) %}
         <div class="alert {{ category }}">{{ message }}</div>
       {% endfor %}
+      {% block breadcrumbs %}{% endblock %}
       {% block content %}{% endblock %}
     </main>
   </body>

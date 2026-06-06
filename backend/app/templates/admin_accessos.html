@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Accessos usuaris - Atles Administració{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="breadcrumbs"><a href="{{ url_for('admin.home') }}">Inici</a><span>&gt;</span><a href="{{ url_for('admin.tools') }}">Eines</a><span>&gt;</span>Accessos usuaris</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Accessos usuaris</h1>
+  <p>Registre d'accessos d'usuaris i auditories. Aquí podrem filtrar per usuari, data i resultat d'autenticació.</p>
+  <form method="get" action="{{ url_for('admin.tools_accessos') }}">
+    <label>Usuari</label>
+    <input type="text" name="username" value="{{ request.args.get('username','') }}" />
+    <label>From (ISO)</label>
+    <input type="text" name="from" value="{{ request.args.get('from','') }}" />
+    <label>To (ISO)</label>
+    <input type="text" name="to" value="{{ request.args.get('to','') }}" />
+    <label>Success</label>
+    <select name="success">
+      <option value="">Tots</option>
+      <option value="1">OK</option>
+      <option value="0">Fallit</option>
+    </select>
+    <button class="button" type="submit">Filtrar</button>
+    <a class="button secondary" href="{{ url_for('admin.tools_accessos', export='csv') }}">Exportar CSV</a>
+  </form>
+
+  {% if entries %}
+    <table style="width:100%; border-collapse: collapse; margin-top:1rem">
+      <thead>
+        <tr>
+          <th>ID</th><th>Usuari</th><th>IP</th><th>Acció</th><th>Success</th><th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for e in entries %}
+        <tr>
+          <td>{{ e.id }}</td>
+          <td>{{ e.username }}</td>
+          <td>{{ e.ip }}</td>
+          <td>{{ e.action }}</td>
+          <td>{{ 'Sí' if e.success else 'No' }}</td>
+          <td>{{ e.created_at }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hi ha registres que coincideixin.</p>
+  {% endif %}
+
+  <a class="button secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</a>
+</div>
+{% endblock %}

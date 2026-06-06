@@ -2,6 +2,10 @@
 
 {% block title %}Eina d'administració - Atles{% endblock %}
 
+{% block breadcrumbs %}
+<nav class="breadcrumbs"><a href="{{ url_for('admin.home') }}">Inici</a></nav>
+{% endblock %}
+
 {% block content %}
 <div class="card">
   <h1>Benvingut/da, {{ user.username }}</h1>

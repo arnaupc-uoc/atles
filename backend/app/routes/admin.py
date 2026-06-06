@@ -9,6 +9,13 @@ from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from app import db
 from app.models.user import User
+from app.models.access_log import AccessLog
+import subprocess
+import os
+import gzip
+import csv
+from io import StringIO
+from datetime import datetime
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -116,12 +123,31 @@ def login():
         password = request.form.get("password", "")
 
         user = User.query.filter_by(username=username).first()
+        ip = request.remote_addr
+        success = False
         if user and user.check_password(password):
             login_user(user)
+            success = True
             next_page = request.args.get("next") or url_for("admin.home")
-            return redirect(next_page)
+        else:
+            error = "Usuari o contrasenya incorrectes."
 
-        error = "Usuari o contrasenya incorrectes."
+        # Registrem l'intent d'accés
+        try:
+            log = AccessLog(
+                user_id=(user.id if user else None),
+                username=(user.username if user else username),
+                ip=ip,
+                action="login",
+                success=success,
+            )
+            db.session.add(log)
+            db.session.commit()
+        except Exception:
+            current_app.logger.exception("No s'ha pogut registrar l'access log")
+
+        if success:
+            return redirect(next_page)
 
     return render_template("login.html", error=error)
 
@@ -329,4 +355,189 @@ def tools():
         "admin_tools.html",
         title="Eines",
         description="Eines i utilitats per a administradors",
+    )
+
+
+@admin_bp.route("/tools/backups")
+@login_required
+@role_required("admin")
+def tools_backups():
+    backups_dir = current_app.config.get("BACKUPS_DIR")
+    files = []
+    try:
+        for fname in sorted(os.listdir(backups_dir), reverse=True):
+            path = os.path.join(backups_dir, fname)
+            if os.path.isfile(path):
+                stat = os.stat(path)
+                files.append({
+                    "name": fname,
+                    "size": stat.st_size,
+                    "mtime": datetime.fromtimestamp(stat.st_mtime),
+                })
+    except Exception:
+        current_app.logger.exception("Error llegint backups")
+
+    return render_template(
+        "admin_backups.html",
+        title="Backups",
+        description="Gestió de còpies de seguretat i restauració",
+        files=files,
+    )
+
+
+@admin_bp.route("/tools/backups/create", methods=["POST"])
+@login_required
+@role_required("admin")
+def tools_backups_create():
+    backups_dir = current_app.config.get("BACKUPS_DIR")
+    timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    out_name = f"backup_{timestamp}.sql.gz"
+    out_path = os.path.join(backups_dir, out_name)
+
+    db_url = current_app.config.get("SQLALCHEMY_DATABASE_URI")
+    pg_dump = current_app.config.get("PG_DUMP_PATH", "pg_dump")
+
+    try:
+        # Use pg_dump with DATABASE_URL
+        cmd = [pg_dump, db_url]
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate(timeout=300)
+        if proc.returncode != 0:
+            current_app.logger.error("pg_dump failed: %s", stderr.decode(errors='ignore'))
+            flash("No s'ha pogut crear el backup.", "error")
+            return redirect(url_for("admin.tools_backups"))
+
+        with gzip.open(out_path, "wb") as f:
+            f.write(stdout)
+
+        flash("Backup creat correctament.", "info")
+    except Exception:
+        current_app.logger.exception("Error creant backup")
+        flash("Error creant el backup.", "error")
+
+    return redirect(url_for("admin.tools_backups"))
+
+
+@admin_bp.route("/tools/backups/download/<filename>")
+@login_required
+@role_required("admin")
+def tools_backups_download(filename):
+    from flask import send_from_directory
+
+    backups_dir = current_app.config.get("BACKUPS_DIR")
+    return send_from_directory(backups_dir, filename, as_attachment=True)
+
+
+@admin_bp.route("/tools/backups/restore", methods=["POST"])
+@login_required
+@role_required("admin")
+def tools_backups_restore():
+    backups_dir = current_app.config.get("BACKUPS_DIR")
+    filename = request.form.get("filename")
+    if not filename:
+        flash("No has seleccionat cap backup.", "error")
+        return redirect(url_for("admin.tools_backups"))
+
+    path = os.path.join(backups_dir, filename)
+    if not os.path.exists(path):
+        flash("Backup no trobat.", "error")
+        return redirect(url_for("admin.tools_backups"))
+
+    psql = current_app.config.get("PSQL_PATH", "psql")
+    db_url = current_app.config.get("SQLALCHEMY_DATABASE_URI")
+
+    try:
+        # Decompress and pipe to psql
+        with gzip.open(path, "rb") as f:
+            proc = subprocess.Popen([psql, db_url], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = proc.communicate(input=f.read(), timeout=600)
+            if proc.returncode != 0:
+                current_app.logger.error("psql restore failed: %s", stderr.decode(errors='ignore'))
+                flash("Error restauran el backup.", "error")
+                return redirect(url_for("admin.tools_backups"))
+
+        flash("Backup restaurat correctament.", "info")
+    except Exception:
+        current_app.logger.exception("Error restauran backup")
+        flash("Error restauran el backup.", "error")
+
+    return redirect(url_for("admin.tools_backups"))
+
+
+@admin_bp.route("/tools/accessos")
+@login_required
+@role_required("admin")
+def tools_accessos():
+    # Filtres
+    q = AccessLog.query
+    username = request.args.get("username")
+    success = request.args.get("success")
+    date_from = request.args.get("from")
+    date_to = request.args.get("to")
+
+    if username:
+        q = q.filter(AccessLog.username.ilike(f"%{username}%"))
+    if success in ("1", "0"):
+        q = q.filter(AccessLog.success == (success == "1"))
+    if date_from:
+        try:
+            dt = datetime.fromisoformat(date_from)
+            q = q.filter(AccessLog.created_at >= dt)
+        except Exception:
+            pass
+    if date_to:
+        try:
+            dt = datetime.fromisoformat(date_to)
+            q = q.filter(AccessLog.created_at <= dt)
+        except Exception:
+            pass
+
+    q = q.order_by(AccessLog.created_at.desc())
+
+    # Export CSV
+    if request.args.get("export") == "csv":
+        si = StringIO()
+        writer = csv.writer(si)
+        writer.writerow(["id", "username", "ip", "action", "success", "created_at"])
+        for row in q.limit(1000).all():
+            writer.writerow([row.id, row.username, row.ip, row.action, row.success, row.created_at.isoformat()])
+        return current_app.response_class(si.getvalue(), mimetype="text/csv")
+
+    entries = q.limit(500).all()
+    return render_template(
+        "admin_accessos.html",
+        title="Accessos usuaris",
+        description="Registre d'accessos d'usuaris i controls d'auditoria",
+        entries=entries,
+    )
+
+
+@admin_bp.route("/tools/logs")
+@login_required
+@role_required("admin")
+def tools_logs():
+    log_file = current_app.config.get("LOG_FILE")
+    tail = []
+    try:
+        if os.path.exists(log_file):
+            with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
+                lines = f.readlines()
+                tail = lines[-500:]
+    except Exception:
+        current_app.logger.exception("Error llegint log file")
+
+    # Export
+    if request.args.get("export") == "csv":
+        si = StringIO()
+        writer = csv.writer(si)
+        writer.writerow(["line"])
+        for line in tail:
+            writer.writerow([line.strip()])
+        return current_app.response_class(si.getvalue(), mimetype="text/csv")
+
+    return render_template(
+        "admin_logs.html",
+        title="Logs",
+        description="Visualització i exportació de logs del sistema",
+        tail=tail,
     )

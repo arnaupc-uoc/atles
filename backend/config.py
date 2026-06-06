@@ -19,3 +19,8 @@ class Config:
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", "Atles <no-reply@localhost>")
+    # Logs and backups
+    LOG_FILE = os.getenv("LOG_FILE", os.path.join(basedir, "logs", "app.log"))
+    BACKUPS_DIR = os.getenv("BACKUPS_DIR", os.path.join(basedir, "backups"))
+    PG_DUMP_PATH = os.getenv("PG_DUMP_PATH", "pg_dump")
+    PSQL_PATH = os.getenv("PSQL_PATH", "psql")

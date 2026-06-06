@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Logs - Atles Administració{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="breadcrumbs"><a href="{{ url_for('admin.home') }}">Inici</a><span>&gt;</span><a href="{{ url_for('admin.tools') }}">Eines</a><span>&gt;</span>Logs</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Logs</h1>
+  <p>Visualització i descàrrega de logs del sistema. Es poden aplicar filtres per nivell i període.</p>
+  <a class="button secondary" href="{{ url_for('admin.tools_logs', export='csv') }}">Exportar CSV</a>
+  <pre style="background:#0b0b0b;color:#e6e6e6;padding:1rem;overflow:auto;max-height:60vh;margin-top:1rem">{% for line in tail %}{{ line }}{% endfor %}</pre>
+  <a class="button secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</a>
+</div>
+{% endblock %}
