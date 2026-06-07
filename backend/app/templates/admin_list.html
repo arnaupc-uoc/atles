@@ -57,11 +57,37 @@
 <v-card elevation="2" class="pa-4 mb-6">
   <div class="summary">Mostrant {{ rows|length }} de {{ total }} registres.</div>
   <v-data-table
-    :headers='[ {% for col in columns %}{ text: "{{ col.label | e }}", value: "{{ col.key }}" }{% if not loop.last %}, {% endif %}{% endfor %} ]'
+    :headers='[ {% for col in columns %}{ title: "{{ col.label | e }}", value: "{{ col.key }}" }{% if not loop.last %}, {% endif %}{% endfor %}{% if rows and rows[0].actions is defined %}, { title: "Accions", value: "actions", sortable: false, align: "center" }{% endif %} ]'
     :items='{{ rows | tojson | safe }}'
     class="elevation-1"
     hide-default-footer
   >
+    {% if rows and rows[0].actions is defined %}
+    {% raw %}
+    <template #item.actions="{ item }">
+      <div class="d-flex gap-2 justify-center">
+        <v-tooltip
+          v-for="action in item.actions"
+          :key="action.name"
+          location="top"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon
+              variant="tonal"
+              class="rounded-full"
+              :href="action.href"
+            >
+              <v-icon>{{ action.icon }}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ action.label }}</span>
+        </v-tooltip>
+      </div>
+    </template>
+    {% endraw %}
+    {% endif %}
   </v-data-table>
 </v-card>
 <v-row class="g-2 align-center">

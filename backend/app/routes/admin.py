@@ -438,7 +438,30 @@ def regions():
         {"key": "region_type", "label": "Tipus"},
         {"key": "parent_id", "label": "Regió pare"},
     ]
-    rows = [item.to_dict() for item in items]
+    rows = []
+    for item in items:
+        row = item.to_dict()
+        row["actions"] = [
+            {
+                "name": "edit",
+                "label": "Editar",
+                "icon": "mdi-pencil",
+                "href": url_for("admin.regions", id=item.id, action="edit"),
+            },
+            {
+                "name": "view",
+                "label": "Visualitzar",
+                "icon": "mdi-eye",
+                "href": url_for("admin.regions", id=item.id, action="view"),
+            },
+            {
+                "name": "delete",
+                "label": "Eliminar",
+                "icon": "mdi-delete",
+                "href": url_for("admin.regions", id=item.id, action="delete"),
+            },
+        ]
+        rows.append(row)
     filters = build_filter_context(search, {"region_type": region_type})
     return render_template(
         "admin_list.html",
