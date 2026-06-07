@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% import 'table_component.html' as table %}
-{% import 'filter_component.html' as filter_macro %}
 
 {% block title %}{{ title }} - Atles Administració{% endblock %}
 
@@ -14,14 +12,26 @@
   <v-card-text>{{ description }}</v-card-text>
 </v-card>
 
-{{ filter_macro.admin_filters(filter_fields, endpoint, filters) }}
-
-{% if total == 0 %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-text>No s'han trobat registres.</v-card-text>
-</v-card>
-{% else %}
-  {{ table.admin_table(columns, rows, page, total, total_pages, endpoint, filters, table_options|default({})) }}
+{% if filter_fields %}
+  <admin-filters
+    :fields='{{ filter_fields | tojson | safe }}'
+    endpoint-url="{{ url_for(endpoint) }}"
+    :initial-filters='{{ filters | default({}) | tojson | safe }}'
+    method="get"
+  ></admin-filters>
 {% endif %}
+
+<admin-table
+  :columns='{{ columns | tojson | safe }}'
+  :rows='{{ rows | tojson | safe }}'
+  :page='{{ page | int }}'
+  :total='{{ total | int }}'
+  :total-pages='{{ total_pages | int }}'
+  endpoint-url-base="{{ url_for(endpoint) }}"
+  :filters='{{ filters | default({}) | tojson | safe }}'
+  :options='{{ options | default({}) | tojson | safe }}'
+  @action-click="openDrawer($event.label, $event.message, $event.href)"
+></admin-table>
 {% endblock %}
+
 {% block script_data %}{{ {'filters': filters} | tojson | safe }}{% endblock %}

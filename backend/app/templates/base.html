@@ -32,7 +32,7 @@
           {% endif %}
         </v-app-bar>
         <v-main>
-          <v-container fluid class="pa-6">
+          <v-container fluid class="pa-6" style="max-width: 1280px;">
             {% for category, message in get_flashed_messages(with_categories=true) %}
               <v-alert variant="tonal" type="{{ category }}" class="mb-4" prominent>
                 {{ message }}
@@ -42,13 +42,23 @@
             {% block content %}{% endblock %}
           </v-container>
         </v-main>
-        {% include 'drawer_component.html' %}
+        <admin-dialog
+          v-model="drawer.open"
+          :title="drawer.title"
+          :message="drawer.message"
+          :has-action="!!drawer.action"
+          @confirm="confirmDrawerAction"
+        ></admin-dialog>
       </v-app>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@4.1.0/dist/vuetify.min.js"></script>
     <script type="application/json" id="backend-app-data">{% block script_data %}{"filters": {}}{% endblock %}</script>
-    <script>
+    <script type="module">
+      import AdminFilters from "{{ url_for('static', filename='js/components/AdminFilters.js') }}";
+      import AdminTable from "{{ url_for('static', filename='js/components/AdminTable.js') }}";
+      import AdminDialog from "{{ url_for('static', filename='js/components/AdminDialog.js') }}";
+
       const backendAppData = (() => {
         const element = document.getElementById('backend-app-data');
         try {
@@ -88,6 +98,12 @@
           },
         },
       });
+
+      // Registrem components importats abans de fer el mount
+      app.component('admin-filters', AdminFilters);
+      app.component('admin-table', AdminTable);
+      app.component('admin-dialog', AdminDialog);
+
       const vuetify = Vuetify.createVuetify();
       app.use(vuetify);
       const vm = app.mount('#backend-app');
