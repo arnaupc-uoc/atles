@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Atles Administració{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="breadcrumbs"><a href="{{ url_for('admin.home') }}">Inici</a><span>&gt;</span>{{ title }}</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>{{ title }}</h1>
+  <p>{{ description }}</p>
+
+  {% if filter_fields %}
+    <form method="get" class="card" style="padding:1rem; margin-bottom:1.5rem;">
+      <div class="grid">
+        {% for field in filter_fields %}
+          <label>
+            {{ field.label }}
+            {% if field.type == 'select' %}
+              <select name="{{ field.name }}">
+                {% for option in field.options %}
+                  <option value="{{ option.value }}" {% if option.value == field.value %}selected{% endif %}>{{ option.label }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              <input type="text" name="{{ field.name }}" value="{{ field.value|default('') }}" />
+            {% endif %}
+          </label>
+        {% endfor %}
+      </div>
+      <button class="button" type="submit">Filtrar</button>
+    </form>
+  {% endif %}
+
+  {% if total == 0 %}
+    <p>No s'han trobat registres.</p>
+  {% else %}
+    <div class="summary">Mostrant {{ rows|length }} de {{ total }} registres.</div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            {% for col in columns %}
+              <th>{{ col.label }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              {% for col in columns %}
+                {% set value = row[col.key] %}
+                <td>
+                  {% if value is iterable and value is not string %}
+                    {{ value|join(', ') }}
+                  {% elif value is boolean %}
+                    {{ 'Sí' if value else 'No' }}
+                  {% else %}
+                    {{ value }}
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      {% if page > 1 %}
+        <a class="page-link" href="{{ url_for(endpoint, page=page-1, **filters) }}">&laquo; Anterior</a>
+      {% endif %}
+
+      {% for num in range(1, total_pages + 1) %}
+        <a class="page-link{% if num == page %} active{% endif %}" href="{{ url_for(endpoint, page=num, **filters) }}">{{ num }}</a>
+      {% endfor %}
+
+      {% if page < total_pages %}
+        <a class="page-link" href="{{ url_for(endpoint, page=page+1, **filters) }}">Següent &raquo;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <a class="button secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</a>
+</div>
+{% endblock %}

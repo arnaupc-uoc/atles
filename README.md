@@ -107,5 +107,3 @@ make up --- gunicorn --- nginx (build) --> NO Hot reload
 make dev ---Flask dev server (debug=True) --- Vite dev server (HMR) --> SI Hot reload
 
 make dev exposa el frontend al port 3000 (mapejat al 5173 del Vite) i el backend al 5000, amb recàrrega automàtica en guardar fitxers.
-
-voldria crear un set de dades creades de forma aleatoria per als diferents models de dades, que contingui 20 elements de cadascun, amb els usuaris s'hauria de mantenir l'usuari admin admin, carregar-lo a la bbdd i fer-ne un backup per tenir-ho disponible per poder-ho recuperar.

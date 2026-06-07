@@ -6,10 +6,15 @@ from functools import wraps
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 from flask_login import (current_user, login_required, login_user, logout_user)
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
+from sqlalchemy import or_
 
 from app import db
 from app.models.user import User
 from app.models.access_log import AccessLog
+from app.models.author import Author
+from app.models.page import Page
+from app.models.publication import Publication
+from app.models.region import Region
 import subprocess
 import os
 import gzip
@@ -43,6 +48,30 @@ def role_required(*roles):
 
     return decorator
 
+def parse_page():
+    try:
+        page = int(request.args.get("page", 1))
+        return page if page > 0 else 1
+    except (TypeError, ValueError):
+        return 1
+
+
+def build_filter_context(search=None, extra=None):
+    filters = {}
+    if search:
+        filters["search"] = search
+    if extra:
+        for key, value in extra.items():
+            if value:
+                filters[key] = value
+    return filters
+
+
+def paginate_query(query, page, per_page=10):
+    total = query.count()
+    total_pages = max(1, (total + per_page - 1) // per_page)
+    items = query.offset((page - 1) * per_page).limit(per_page).all()
+    return items, total, total_pages
 
 def get_serializer():
     return URLSafeTimedSerializer(
@@ -296,10 +325,38 @@ def home():
 @login_required
 @role_required("admin")
 def users():
+    page = parse_page()
+    search = request.args.get("search", "").strip()
+    query = User.query.order_by(User.id)
+    if search:
+        query = query.filter(
+            or_(
+                User.username.ilike(f"%{search}%"),
+                User.email.ilike(f"%{search}%"),
+            )
+        )
+    items, total, total_pages = paginate_query(query, page)
+    columns = [
+        {"key": "id", "label": "ID"},
+        {"key": "username", "label": "Usuari"},
+        {"key": "email", "label": "Correu"},
+    ]
+    rows = [item.to_dict() for item in items]
+    filters = build_filter_context(search)
     return render_template(
-        "admin_section.html",
+        "admin_list.html",
         title="Usuaris",
         description="Gestió d'usuaris i permisos",
+        columns=columns,
+        rows=rows,
+        page=page,
+        total=total,
+        total_pages=total_pages,
+        endpoint="admin.users",
+        filter_fields=[
+            {"name": "search", "label": "Cerca usuaris", "type": "text", "value": search},
+        ],
+        filters=filters,
     )
 
 
@@ -307,10 +364,59 @@ def users():
 @login_required
 @role_required("admin", "editor")
 def publications():
+    page = parse_page()
+    search = request.args.get("search", "").strip()
+    pub_type = request.args.get("pub_type", "").strip()
+    query = Publication.query.order_by(Publication.year.desc(), Publication.title)
+    if search:
+        query = query.filter(
+            or_(
+                Publication.title.ilike(f"%{search}%"),
+                Publication.pub_type.ilike(f"%{search}%"),
+                Publication.description.ilike(f"%{search}%"),
+            )
+        )
+    if pub_type:
+        query = query.filter(Publication.pub_type == pub_type)
+    items, total, total_pages = paginate_query(query, page)
+    columns = [
+        {"key": "id", "label": "ID"},
+        {"key": "title", "label": "Títol"},
+        {"key": "pub_type", "label": "Tipus"},
+        {"key": "year", "label": "Any"},
+        {"key": "region_id", "label": "Regió"},
+        {"key": "author_ids", "label": "Autors"},
+    ]
+    rows = [item.to_dict() for item in items]
+    filters = build_filter_context(search, {"pub_type": pub_type})
     return render_template(
-        "admin_section.html",
+        "admin_list.html",
         title="Publicacions",
         description="Gestió de publicacions i contingut relacionat.",
+        columns=columns,
+        rows=rows,
+        page=page,
+        total=total,
+        total_pages=total_pages,
+        endpoint="admin.publications",
+        filter_fields=[
+            {"name": "search", "label": "Cerca publicacions", "type": "text", "value": search},
+            {
+                "name": "pub_type",
+                "label": "Tipus",
+                "type": "select",
+                "options": [
+                    {"value": "", "label": "Tots"},
+                    {"value": "llibre", "label": "Llibre"},
+                    {"value": "documental", "label": "Documental"},
+                    {"value": "pel·lícula", "label": "Pel·lícula"},
+                    {"value": "article", "label": "Article"},
+                    {"value": "reportatge", "label": "Reportatge"},
+                ],
+                "value": pub_type,
+            },
+        ],
+        filters=filters,
     )
 
 
@@ -318,10 +424,56 @@ def publications():
 @login_required
 @role_required("admin", "editor")
 def regions():
+    page = parse_page()
+    search = request.args.get("search", "").strip()
+    region_type = request.args.get("region_type", "").strip()
+    query = Region.query.order_by(Region.name)
+    if search:
+        query = query.filter(
+            or_(
+                Region.name.ilike(f"%{search}%"),
+                Region.region_type.ilike(f"%{search}%"),
+            )
+        )
+    if region_type:
+        query = query.filter(Region.region_type == region_type)
+    items, total, total_pages = paginate_query(query, page)
+    columns = [
+        {"key": "id", "label": "ID"},
+        {"key": "name", "label": "Nom"},
+        {"key": "region_type", "label": "Tipus"},
+        {"key": "parent_id", "label": "Regió pare"},
+    ]
+    rows = [item.to_dict() for item in items]
+    filters = build_filter_context(search, {"region_type": region_type})
     return render_template(
-        "admin_section.html",
+        "admin_list.html",
         title="Regions",
         description="Gestió de regions i mapes geogràfics.",
+        columns=columns,
+        rows=rows,
+        page=page,
+        total=total,
+        total_pages=total_pages,
+        endpoint="admin.regions",
+        filter_fields=[
+            {"name": "search", "label": "Cerca regions", "type": "text", "value": search},
+            {
+                "name": "region_type",
+                "label": "Tipus",
+                "type": "select",
+                "options": [
+                    {"value": "", "label": "Tots"},
+                    {"value": "municipi", "label": "Municipi"},
+                    {"value": "comarca", "label": "Comarca"},
+                    {"value": "província", "label": "Província"},
+                    {"value": "regió", "label": "Regió"},
+                    {"value": "districte", "label": "Districte"},
+                ],
+                "value": region_type,
+            },
+        ],
+        filters=filters,
     )
 
 
@@ -329,10 +481,39 @@ def regions():
 @login_required
 @role_required("admin", "editor")
 def authors():
+    page = parse_page()
+    search = request.args.get("search", "").strip()
+    query = Author.query.order_by(Author.name)
+    if search:
+        query = query.filter(
+            or_(
+                Author.name.ilike(f"%{search}%"),
+                Author.bio.ilike(f"%{search}%"),
+            )
+        )
+    items, total, total_pages = paginate_query(query, page)
+    columns = [
+        {"key": "id", "label": "ID"},
+        {"key": "name", "label": "Nom"},
+        {"key": "bio", "label": "Bio"},
+        {"key": "publication_ids", "label": "Publicacions"},
+    ]
+    rows = [item.to_dict() for item in items]
+    filters = build_filter_context(search)
     return render_template(
-        "admin_section.html",
+        "admin_list.html",
         title="Autors",
         description="Gestió d'autors i informació relacionada.",
+        columns=columns,
+        rows=rows,
+        page=page,
+        total=total,
+        total_pages=total_pages,
+        endpoint="admin.authors",
+        filter_fields=[
+            {"name": "search", "label": "Cerca autors", "type": "text", "value": search},
+        ],
+        filters=filters,
     )
 
 
@@ -340,10 +521,56 @@ def authors():
 @login_required
 @role_required("admin", "editor")
 def pages():
+    page = parse_page()
+    search = request.args.get("search", "").strip()
+    published = request.args.get("published", "").strip()
+    query = Page.query.order_by(Page.title)
+    if search:
+        query = query.filter(
+            or_(
+                Page.title.ilike(f"%{search}%"),
+                Page.slug.ilike(f"%{search}%"),
+                Page.content.ilike(f"%{search}%"),
+            )
+        )
+    if published in ("yes", "no"):
+        query = query.filter(Page.published == (published == "yes"))
+    items, total, total_pages = paginate_query(query, page)
+    columns = [
+        {"key": "id", "label": "ID"},
+        {"key": "title", "label": "Títol"},
+        {"key": "slug", "label": "Slug"},
+        {"key": "published", "label": "Publicada"},
+        {"key": "created_at", "label": "Creat"},
+        {"key": "updated_at", "label": "Actualitzat"},
+    ]
+    rows = [item.to_dict() for item in items]
+    filters = build_filter_context(search, {"published": published})
     return render_template(
-        "admin_section.html",
+        "admin_list.html",
         title="Pàgines",
         description="Gestió de pàgines i contingut estàtic.",
+        columns=columns,
+        rows=rows,
+        page=page,
+        total=total,
+        total_pages=total_pages,
+        endpoint="admin.pages",
+        filter_fields=[
+            {"name": "search", "label": "Cerca pàgines", "type": "text", "value": search},
+            {
+                "name": "published",
+                "label": "Publicada",
+                "type": "select",
+                "options": [
+                    {"value": "", "label": "Totes"},
+                    {"value": "yes", "label": "Sí"},
+                    {"value": "no", "label": "No"},
+                ],
+                "value": published,
+            },
+        ],
+        filters=filters,
     )
 
 
