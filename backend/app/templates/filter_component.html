@@ -1,0 +1,39 @@
+{% macro admin_filters(filter_fields, endpoint, filters, form_method='get') %}
+{% set filters = filters | default({}) %}
+{% if filter_fields %}
+<v-card elevation="2" class="pa-4 mb-6">
+  <form method="{{ form_method }}">
+    <v-row class="g-4">
+      {% for field in filter_fields %}
+        <v-col cols="12" md="4">
+          {% if field.options is defined %}
+            <v-select
+              name="{{ field.name }}"
+              label="{{ field.label }}"
+              :items='{{ field.options | tojson | safe }}'
+              item-title="label"
+              item-value="value"
+              v-model="filters['{{ field.name }}']"
+              clearable
+            ></v-select>
+          {% else %}
+            <v-text-field
+              name="{{ field.name }}"
+              label="{{ field.label }}"
+              v-model="filters['{{ field.name }}']"
+              clearable
+            ></v-text-field>
+          {% endif %}
+        </v-col>
+      {% endfor %}
+    </v-row>
+    <v-row class="g-4 mt-4">
+      <v-col cols="auto">
+        <v-btn color="primary" type="submit">Filtrar</v-btn>
+        <v-btn variant="tonal" color="secondary" href="{{ url_for(endpoint) }}">Netejar</v-btn>
+      </v-col>
+    </v-row>
+  </form>
+</v-card>
+{% endif %}
+{% endmacro %}

@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import 'table_component.html' as table %}
+{% import 'filter_component.html' as filter_macro %}
 
 {% block title %}{{ title }} - Atles Administració{% endblock %}
 
@@ -12,101 +14,14 @@
   <v-card-text>{{ description }}</v-card-text>
 </v-card>
 
-{% if filter_fields %}
-<v-card elevation="2" class="pa-4 mb-6">
-  <form method="get">
-    <v-row class="g-4">
-      {% for field in filter_fields %}
-        <v-col cols="12" md="4">
-          {% if field.options is defined %}
-            <v-select
-              name="{{ field.name }}"
-              label="{{ field.label }}"
-              :items='{{ field.options | tojson | safe }}'
-              item-title="label"
-              item-value="value"
-              v-model="filters['{{ field.name }}']"
-              clearable
-            ></v-select>
-          {% else %}
-            <v-text-field
-              name="{{ field.name }}"
-              label="{{ field.label }}"
-              v-model="filters['{{ field.name }}']"
-              clearable
-            ></v-text-field>
-          {% endif %}
-        </v-col>
-      {% endfor %}
-    </v-row>
-    <v-row class="g-4 mt-4">
-      <v-col cols="auto">
-        <v-btn color="primary" type="submit">Filtrar</v-btn>
-        <v-btn variant="tonal" color="secondary" href="{{ url_for(endpoint) }}">Netejar</v-btn>
-      </v-col>
-    </v-row>
-  </form>
-</v-card>
-{% endif %}
+{{ filter_macro.admin_filters(filter_fields, endpoint, filters) }}
 
 {% if total == 0 %}
 <v-card elevation="2" class="pa-6 mb-6">
   <v-card-text>No s'han trobat registres.</v-card-text>
 </v-card>
 {% else %}
-<v-card elevation="2" class="pa-4 mb-6">
-  <div class="summary">Mostrant {{ rows|length }} de {{ total }} registres.</div>
-  <v-data-table
-    :headers='[ {% for col in columns %}{ title: "{{ col.label | e }}", value: "{{ col.key }}" }{% if not loop.last %}, {% endif %}{% endfor %}{% if rows and rows[0].actions is defined %}, { title: "Accions", value: "actions", sortable: false, align: "center" }{% endif %} ]'
-    :items='{{ rows | tojson | safe }}'
-    class="elevation-1"
-    hide-default-footer
-  >
-    {% if rows and rows[0].actions is defined %}
-    {% raw %}
-    <template #item.actions="{ item }">
-      <div class="d-flex gap-2 justify-center">
-        <v-tooltip
-          v-for="action in item.actions"
-          :key="action.name"
-          location="top"
-        >
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              icon
-              variant="tonal"
-              class="rounded-full"
-              :href="action.href"
-            >
-              <v-icon>{{ action.icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ action.label }}</span>
-        </v-tooltip>
-      </div>
-    </template>
-    {% endraw %}
-    {% endif %}
-  </v-data-table>
-</v-card>
-<v-row class="g-2 align-center">
-  <v-col cols="auto">
-    {% if page > 1 %}
-      <v-btn variant="tonal" href="{{ url_for(endpoint, page=page-1, **(filters|default({}))) }}">&laquo; Anterior</v-btn>
-    {% endif %}
-  </v-col>
-  <v-col cols="auto">
-    {% for num in range(1, total_pages + 1) %}
-      <v-btn variant="text" color="{{ 'primary' if num == page else 'secondary' }}" href="{{ url_for(endpoint, page=num, **(filters|default({}))) }}">{{ num }}</v-btn>
-    {% endfor %}
-  </v-col>
-  <v-col cols="auto">
-    {% if page < total_pages %}
-      <v-btn variant="tonal" href="{{ url_for(endpoint, page=page+1, **(filters|default({}))) }}">Següent &raquo;</v-btn>
-    {% endif %}
-  </v-col>
-</v-row>
+  {{ table.admin_table(columns, rows, page, total, total_pages, endpoint, filters, table_options|default({})) }}
 {% endif %}
 {% endblock %}
 {% block script_data %}{{ {'filters': filters} | tojson | safe }}{% endblock %}

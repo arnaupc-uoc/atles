@@ -1,0 +1,35 @@
+{% raw %}
+<v-navigation-drawer
+  v-model="drawer.open"
+  position="top"
+  temporary
+  elevation="8"
+  class="drawer-top"
+>
+  <div class="d-flex align-center justify-space-between pa-4 border-b">
+    <h2 class="text-h6">{{ drawer.title }}</h2>
+    <v-btn
+      icon="mdi-close"
+      variant="text"
+      @click="drawer.open = false"
+    ></v-btn>
+  </div>
+  <div class="pa-6">
+    <p v-if="drawer.message" class="mb-4">{{ drawer.message }}</p>
+    <div v-if="drawer.action" class="d-flex gap-2">
+      <v-btn
+        color="primary"
+        @click="confirmDrawerAction"
+      >
+        Confirmar
+      </v-btn>
+      <v-btn
+        variant="tonal"
+        @click="drawer.open = false"
+      >
+        Cancelar
+      </v-btn>
+    </div>
+  </div>
+</v-navigation-drawer>
+{% endraw %}
