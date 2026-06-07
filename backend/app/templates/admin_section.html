@@ -7,10 +7,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>{{ title }}</h1>
-  <p>{{ description }}</p>
-  <p>Aquesta pàgina és un placeholder d'administració. Aquí es mostrarà la gestió de {{ title|lower }}.</p>
-  <a class="button secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</a>
-</div>
+<v-card elevation="2" class="pa-6">
+  <v-card-title>{{ title }}</v-card-title>
+  <v-card-text>{{ description }}</v-card-text>
+  <v-card-text>Aquesta pàgina és un placeholder d'administració. Aquí es mostrarà la gestió de {{ title|lower }}.</v-card-text>
+  <v-card-actions>
+    <v-btn variant="tonal" color="secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</v-btn>
+  </v-card-actions>
+</v-card>
 {% endblock %}

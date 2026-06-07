@@ -7,33 +7,42 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>Eines</h1>
-  <p>Accedeix a les eines i utilitats disponibles per a administradors.</p>
-</div>
+<v-card elevation="2" class="pa-6 mb-6">
+  <v-card-title>Eines</v-card-title>
+  <v-card-text>Accedeix a les eines i utilitats disponibles per a administradors.</v-card-text>
+</v-card>
 
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
-  <div class="card">
-    <h2>Backups</h2>
-    <p>Crear, descarregar i restaurar còpies de seguretat de la base de dades.</p>
-    <a class="button" href="{{ url_for('admin.tools_backups') }}">Accedir</a>
-  </div>
+<v-row class="g-4">
+  <v-col cols="12" md="4">
+    <v-card elevation="2" class="pa-4">
+      <v-card-title>Backups</v-card-title>
+      <v-card-text>Crear, descarregar i restaurar còpies de seguretat de la base de dades.</v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" href="{{ url_for('admin.tools_backups') }}">Accedir</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-col>
 
-  <div class="card">
-    <h2>Accessos usuaris</h2>
-    <p>Veure registres d'accessos i auditories d'autenticació.</p>
-    <a class="button" href="{{ url_for('admin.tools_accessos') }}">Accedir</a>
-  </div>
+  <v-col cols="12" md="4">
+    <v-card elevation="2" class="pa-4">
+      <v-card-title>Accessos usuaris</v-card-title>
+      <v-card-text>Veure registres d'accessos i auditories d'autenticació.</v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" href="{{ url_for('admin.tools_accessos') }}">Accedir</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-col>
 
-  <div class="card">
-    <h2>Logs</h2>
-    <p>Visualitzar i exportar els logs del sistema.</p>
-    <a class="button" href="{{ url_for('admin.tools_logs') }}">Accedir</a>
-  </div>
-</div>
+  <v-col cols="12" md="4">
+    <v-card elevation="2" class="pa-4">
+      <v-card-title>Logs</v-card-title>
+      <v-card-text>Visualitzar i exportar els logs del sistema.</v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" href="{{ url_for('admin.tools_logs') }}">Accedir</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-col>
+</v-row>
 
-<div style="margin-top:1rem;">
-  <a class="button secondary" href="{{ url_for('admin.home') }}">Tornar a Eines</a>
-</div>
-
+<v-btn variant="tonal" color="secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</v-btn>
 {% endblock %}

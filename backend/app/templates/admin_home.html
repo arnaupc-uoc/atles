@@ -7,31 +7,34 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>Benvingut/da, {{ user.username }}</h1>
-  <p>Rol: <strong>{{ role }}</strong></p>
-  <p>Selecciona una secció per començar a gestionar el contingut.</p>
-</div>
+<v-card elevation="2" class="pa-6 mb-6">
+  <v-card-title class="text-h5">Benvingut/da, {{ user.username }}</v-card-title>
+  <v-card-subtitle>Rol: <strong>{{ role }}</strong></v-card-subtitle>
+  <v-card-text>Selecciona una secció per començar a gestionar el contingut.</v-card-text>
+</v-card>
 
 {% if sections %}
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-  {# Orden específic: regions, publicacions, autors, pàgines, usuaris #}
+<v-row class="g-4">
   {% set order = ['Regions', 'Publicacions', 'Autors', 'Pàgines', 'Usuaris', 'Eines'] %}
   {% for title in order %}
     {% for section in sections %}
       {% if section.title == title %}
-      <div class="card">
-        <h2>{{ section.title }}</h2>
-        <p>{{ section.description }}</p>
-        <a class="button" href="{{ section.path }}">Accedir</a>
-      </div>
+      <v-col cols="12" md="4">
+        <v-card elevation="2" class="pa-4">
+          <v-card-title>{{ section.title }}</v-card-title>
+          <v-card-text>{{ section.description }}</v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" href="{{ section.path }}">Accedir</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
       {% endif %}
     {% endfor %}
   {% endfor %}
-</div>
+</v-row>
 {% else %}
-<div class="card">
-  <p>No tens accés a cap secció amb el teu rol actual.</p>
-</div>
+<v-card elevation="2" class="pa-6">
+  <v-card-text>No tens accés a cap secció amb el teu rol actual.</v-card-text>
+</v-card>
 {% endif %}
 {% endblock %}

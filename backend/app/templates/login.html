@@ -3,21 +3,20 @@
 {% block title %}Login - Atles Administració{% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>Iniciar sessió</h1>
+<v-card elevation="2" class="pa-6 mx-auto" style="max-width: 520px;">
+  <v-card-title>Iniciar sessió</v-card-title>
   {% if error %}
-  <div class="alert error">{{ error }}</div>
+    <v-alert type="error" class="mb-4" prominent>{{ error }}</v-alert>
   {% endif %}
   <form method="post">
-    <label for="username">Usuari</label>
-    <input id="username" name="username" type="text" required autofocus />
-
-    <label for="password">Contrasenya</label>
-    <input id="password" name="password" type="password" required />
-
-    <button class="button" type="submit">Entrar</button>
+    <v-text-field id="username" name="username" label="Usuari" required autofocus></v-text-field>
+    <v-text-field id="password" name="password" label="Contrasenya" type="password" required></v-text-field>
+    <v-card-actions class="pt-4">
+      <v-btn color="primary" type="submit">Entrar</v-btn>
+    </v-card-actions>
   </form>
-  <p style="margin-top: 1rem; color: #4b5563;">Usuari per defecte: <strong>admin</strong> / contrasenya: <strong>admin</strong></p>
-  <p style="margin-top: 0.5rem;"><a href="{{ url_for('admin.recover_password') }}">Has oblidat la contrasenya?</a></p>
-</div>
+
+  <v-card-subtitle class="mt-4">Usuari per defecte: <strong>admin</strong> / contrasenya: <strong>admin</strong></v-card-subtitle>
+  <v-btn variant="text" href="{{ url_for('admin.recover_password') }}">Has oblidat la contrasenya?</v-btn>
+</v-card>
 {% endblock %}

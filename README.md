@@ -11,7 +11,8 @@ El backend no cal que sigui una unica pàgina, cada view ens portarà a un llist
 Bona idea! Tens un projecte interessant. El stack Flask + Vue + Material Design està bé, però aquí van algunes recomanacions:
 Base de dades: PostgreSQL + PostGIS — imprescindible. Necessites una base de dades espacial per guardar polígons (pobles, comarques...) i fer consultes geogràfiques eficients. Amb Flask, SQLAlchemy + GeoAlchemy2.
 Mapa: Leaflet + vue-leaflet — lleuger, funciona a mòbils, suporta tiles i molts polígons. Si necessites molta optimització, MapLibre GL JS amb vector tiles.
-CSS: Vuetify (Material Design per Vue) — et dona components MD llestos i responsius.
+CSS: Vuetify (Material Design per Vue) — et dona components MD llestos i responsius. Utilitzarem els seus components i estils tant en el frontend com en el backend.
+
 Altres:
 
 - Pinia per estat global a Vue

@@ -270,10 +270,10 @@ def home():
     role = current_role()
     sections = [
         {
-            "title": "Usuaris",
-            "path": "/users",
-            "description": "Gestió d'usuaris i permisos",
-            "roles": ["admin"]
+            "title": "Regions",
+            "path": "/regions",
+            "description": "Gestió de regions geogràfiques i mapes",
+            "roles": ["admin", "editor"]
         },
         {
             "title": "Publicacions",
@@ -281,15 +281,6 @@ def home():
             "description": "Gestió de contingut i publicacions",
             "roles": ["admin", "editor"]
         },
-        {
-            "title": "Regions",
-            "path": "/regions",
-            "description": "Gestió de regions geogràfiques i mapes",
-            "roles": ["admin", "editor"]
-        }
-    ]
-    # Afegim autors i pàgines a les seccions de l'administració
-    sections.extend([
         {
             "title": "Autors",
             "path": "/authors",
@@ -302,16 +293,19 @@ def home():
             "description": "Gestió de pàgines i contingut estàtic",
             "roles": ["admin", "editor"],
         },
-    ])
-    # Afegim la secció d'eines (nom en català: Eines)
-    sections.append(
+        {
+            "title": "Usuaris",
+            "path": "/users",
+            "description": "Gestió d'usuaris i permisos",
+            "roles": ["admin"]
+        },
         {
             "title": "Eines",
             "path": "/tools",
             "description": "Utilitats i eines d'administració",
             "roles": ["admin"],
-        }
-    )
+        },
+    ]
     visible_sections = [section for section in sections if role in section["roles"]]
     return render_template(
         "admin_home.html",

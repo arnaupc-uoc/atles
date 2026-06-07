@@ -7,29 +7,38 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>Backups</h1>
-  <p>Gestió de còpies de seguretat: crear, descarregar i restaurar backups de la base de dades.</p>
-  <form method="post" action="{{ url_for('admin.tools_backups_create') }}">
-    <button class="button" type="submit">Crear backup</button>
-  </form>
-  <h3 style="margin-top:1rem">Backups disponibles</h3>
-  {% if files %}
-    <ul>
-      {% for f in files %}
-      <li>
-        <strong>{{ f.name }}</strong> — {{ f.mtime }} — {{ (f.size / 1024) | round(1) }} KB
-        <a href="{{ url_for('admin.tools_backups_download', filename=f.name) }}" class="button secondary" style="margin-left:0.5rem">Descarregar</a>
-        <form method="post" action="{{ url_for('admin.tools_backups_restore') }}" style="display:inline">
-          <input type="hidden" name="filename" value="{{ f.name }}" />
-          <button class="button" type="submit" style="margin-left:0.5rem">Restaurar</button>
-        </form>
-      </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No s'han trobat backups.</p>
-  {% endif %}
-  <a class="button secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</a>
-</div>
+<v-card elevation="2" class="pa-6 mb-6">
+  <v-card-title>Backups</v-card-title>
+  <v-card-text>Gestió de còpies de seguretat: crear, descarregar i restaurar backups de la base de dades.</v-card-text>
+  <v-card-actions>
+    <form method="post" action="{{ url_for('admin.tools_backups_create') }}">
+      <v-btn color="primary" type="submit">Crear backup</v-btn>
+    </form>
+  </v-card-actions>
+</v-card>
+
+{% if files %}
+<v-card elevation="2" class="pa-4 mb-6">
+  <v-data-table
+    :headers='[ { text: "Nom", value: "name" }, { text: "Data", value: "mtime" }, { text: "Mida", value: "size" }, { text: "Accions", value: "actions" } ]'
+    :items='[ {% for f in files %}{ name: "{{ f.name | e }}", mtime: "{{ f.mtime }}", size: "{{ (f.size / 1024) | round(1) }} KB", actions: "" }{% if not loop.last %}, {% endif %}{% endfor %} ]'
+    class="elevation-1"
+    hide-default-footer
+  >
+    <template #item.actions="{ item }">
+      <v-btn variant="tonal" size="small" :href="`{{ url_for('admin.tools_backups_download', filename='') }}/${item.name}`">Descarregar</v-btn>
+      <form method="post" action="{{ url_for('admin.tools_backups_restore') }}" style="display:inline">
+        <input type="hidden" name="filename" :value="item.name" />
+        <v-btn variant="tonal" size="small" type="submit">Restaurar</v-btn>
+      </form>
+    </template>
+  </v-data-table>
+</v-card>
+{% else %}
+<v-card elevation="2" class="pa-6 mb-6">
+  <v-card-text>No s'han trobat backups.</v-card-text>
+</v-card>
+{% endif %}
+
+<v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</v-btn>
 {% endblock %}

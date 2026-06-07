@@ -7,50 +7,85 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>Accessos usuaris</h1>
-  <p>Registre d'accessos d'usuaris i auditories. Aquí podrem filtrar per usuari, data i resultat d'autenticació.</p>
-  <form method="get" action="{{ url_for('admin.tools_accessos') }}">
-    <label>Usuari</label>
-    <input type="text" name="username" value="{{ request.args.get('username','') }}" />
-    <label>From (ISO)</label>
-    <input type="text" name="from" value="{{ request.args.get('from','') }}" />
-    <label>To (ISO)</label>
-    <input type="text" name="to" value="{{ request.args.get('to','') }}" />
-    <label>Success</label>
-    <select name="success">
-      <option value="">Tots</option>
-      <option value="1">OK</option>
-      <option value="0">Fallit</option>
-    </select>
-    <button class="button" type="submit">Filtrar</button>
-    <a class="button secondary" href="{{ url_for('admin.tools_accessos', export='csv') }}">Exportar CSV</a>
+<v-card elevation="2" class="pa-6 mb-6">
+  <v-card-title>Accessos usuaris</v-card-title>
+  <v-card-text>Registre d'accessos d'usuaris i auditories. Aquí podràs filtrar per usuari, data i resultat d'autenticació.</v-card-text>
+
+  <form method="get" action="{{ url_for('admin.tools_accessos') }}" class="mt-4">
+    <v-row class="g-4">
+      <v-col cols="12" md="3">
+        <v-text-field
+          name="username"
+          label="Usuari"
+          v-model="filters.username"
+          clearable
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12" md="3">
+        <v-text-field
+          name="from"
+          label="From (ISO)"
+          v-model="filters['from']"
+          clearable
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12" md="3">
+        <v-text-field
+          name="to"
+          label="To (ISO)"
+          v-model="filters.to"
+          clearable
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12" md="3">
+        <v-select
+          name="success"
+          label="Resultat"
+          :items='[
+            { title: "Tots", value: "" },
+            { title: "OK", value: "1" },
+            { title: "Fallit", value: "0" }
+          ]'
+          item-title="title"
+          item-value="value"
+          v-model="filters.success"
+          clearable
+        ></v-select>
+      </v-col>
+    </v-row>
+    <v-row class="g-4 mt-4">
+      <v-col cols="12" md="4">
+        <v-btn color="primary" type="submit">Filtrar</v-btn>
+        <v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools_accessos', export='csv') }}">Exportar CSV</v-btn>
+      </v-col>
+    </v-row>
   </form>
+</v-card>
 
-  {% if entries %}
-    <table style="width:100%; border-collapse: collapse; margin-top:1rem">
-      <thead>
-        <tr>
-          <th>ID</th><th>Usuari</th><th>IP</th><th>Acció</th><th>Success</th><th>Data</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for e in entries %}
-        <tr>
-          <td>{{ e.id }}</td>
-          <td>{{ e.username }}</td>
-          <td>{{ e.ip }}</td>
-          <td>{{ e.action }}</td>
-          <td>{{ 'Sí' if e.success else 'No' }}</td>
-          <td>{{ e.created_at }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No hi ha registres que coincideixin.</p>
-  {% endif %}
+{% if entries %}
+<v-card elevation="2" class="pa-4 mb-6">
+  <v-data-table
+    :headers='[ { text: "ID", value: "id" }, { text: "Usuari", value: "username" }, { text: "IP", value: "ip" }, { text: "Acció", value: "action" }, { text: "Success", value: "success" }, { text: "Data", value: "created_at" } ]'
+    :items='[ {% for e in entries %}{ id: {{ e.id }}, username: "{{ e.username | e }}", ip: "{{ e.ip }}", action: "{{ e.action | e }}", success: {{ 'true' if e.success else 'false' }}, created_at: "{{ e.created_at }}" }{% if not loop.last %}, {% endif %}{% endfor %} ]'
+    class="elevation-1"
+    hide-default-footer
+  >
+    <template #item.success="{ item }">
+      {{ 'Sí' if item.success else 'No' }}
+    </template>
+  </v-data-table>
+</v-card>
+{% else %}
+<v-card elevation="2" class="pa-6 mb-6">
+  <v-card-text>No hi ha registres que coincideixin.</v-card-text>
+</v-card>
+{% endif %}
 
-  <a class="button secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</a>
-</div>
+<v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</v-btn>
 {% endblock %}
+{% block script_data %}{{ {'filters': {
+  'username': request.args.get('username', ''),
+  'from': request.args.get('from', ''),
+  'to': request.args.get('to', ''),
+  'success': request.args.get('success', '')
+}} | tojson | safe }}{% endblock %}

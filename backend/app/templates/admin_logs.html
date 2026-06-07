@@ -7,11 +7,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>Logs</h1>
-  <p>Visualització i descàrrega de logs del sistema. Es poden aplicar filtres per nivell i període.</p>
-  <a class="button secondary" href="{{ url_for('admin.tools_logs', export='csv') }}">Exportar CSV</a>
-  <pre style="background:#0b0b0b;color:#e6e6e6;padding:1rem;overflow:auto;max-height:60vh;margin-top:1rem">{% for line in tail %}{{ line }}{% endfor %}</pre>
-  <a class="button secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</a>
-</div>
+<v-card elevation="2" class="pa-6 mb-6">
+  <v-card-title>Logs</v-card-title>
+  <v-card-text>Visualització i descàrrega de logs del sistema. Es poden aplicar filtres per nivell i període.</v-card-text>
+  <v-card-actions>
+    <v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools_logs', export='csv') }}">Exportar CSV</v-btn>
+  </v-card-actions>
+</v-card>
+
+<v-card elevation="2" class="pa-4 mb-6">
+  <v-sheet color="#0b0b0b" class="pa-4" rounded="lg">
+    <pre style="color:#e6e6e6; white-space: pre-wrap; word-break: break-word;">{% for line in tail %}{{ line }}{% endfor %}</pre>
+  </v-sheet>
+</v-card>
+
+<v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</v-btn>
 {% endblock %}
