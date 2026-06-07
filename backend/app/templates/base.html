@@ -25,21 +25,66 @@
     <div id="backend-app" v-cloak>
       <v-app>
         <v-app-bar color="primary" dark elevated>
-          <v-app-bar-title>Atles Administració</v-app-bar-title>
+          <a href="{{ url_for('admin.home') }}" class="d-inline-flex align-center text-decoration-none ml-4">
+            <v-img
+              src="{{ url_for('static', filename='img/logo.png') }}"
+              alt="Logo Atles"
+              width="48px"
+              height="28px"
+              class="mr-2"
+              contain
+            ></v-img>
+            <span class="text-title-large text-white font-weight-medium">Atles Administració</span>
+          </a>
+
           <v-spacer></v-spacer>
+
           {% if current_user.is_authenticated %}
-            <v-btn variant="text" color="white" href="{{ url_for('admin.logout') }}">Sortir</v-btn>
+            <div class="d-flex ga-2 mr-4">
+
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    icon="mdi-cog"
+                    variant="text"
+                    color="white"
+                    href="/config"
+                    class="rounded-circle"
+                  ></v-btn>
+                </template>
+                <span>Configuració</span>
+              </v-tooltip>
+
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    icon="mdi-logout"
+                    variant="text"
+                    color="white"
+                    href="{{ url_for('admin.logout') }}"
+                    class="rounded-circle"
+                  ></v-btn>
+                </template>
+                <span>Sortir</span>
+              </v-tooltip>
+
+            </div>
           {% endif %}
         </v-app-bar>
         <v-main>
-          <v-container fluid class="pa-6" style="max-width: 1280px;">
+          <v-container fluid class="pa-6 pb-16" style="max-width: 1280px;">
             {% for category, message in get_flashed_messages(with_categories=true) %}
               <v-alert variant="tonal" type="{{ category }}" class="mb-4" prominent>
                 {{ message }}
               </v-alert>
             {% endfor %}
+
             {% block breadcrumbs %}{% endblock %}
+
             {% block content %}{% endblock %}
+
           </v-container>
         </v-main>
         <admin-dialog
