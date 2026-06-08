@@ -7,10 +7,10 @@
 {% endblock %}
 
 {% block content %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-title>{{ title }}</v-card-title>
-  <v-card-text>{{ description }}</v-card-text>
-</v-card>
+<q-card elevation="2" class="q-pa-lg q-mb-lg">
+  <q-card-section class="text-h6">{{ title }}</q-card-section>
+  <q-card-section>{{ description }}</q-card-section>
+</q-card>
 
 {% if filter_fields %}
   <admin-filters

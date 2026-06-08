@@ -1,11 +1,8 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { createRouter, createWebHistory } from "vue-router";
-import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
-import "@mdi/font/css/materialdesignicons.css";
-import "vuetify/styles";
+import { Quasar } from "quasar";
+import "@quasar/extras/material-icons/material-icons.css";
+import "quasar/dist/quasar.prod.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import App from "./App.vue";
@@ -22,14 +19,8 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-const vuetify = createVuetify({
-  components,
-  directives,
-  icons: { defaultSet: "mdi" },
-});
-
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);
-app.use(vuetify);
+app.use(Quasar);
 app.mount("#app");

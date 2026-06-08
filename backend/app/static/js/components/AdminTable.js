@@ -18,49 +18,62 @@ export default {
   emits: ['action-click'],
   data() {
     return {
-      tableSearch: ''
+      tableSearch: '',
+      pagination: {
+        page: this.page,
+        rowsPerPage: this.options.rowsPerPage || Math.max(1, Math.ceil(this.total / Math.max(this.totalPages, 1))),
+        rowsNumber: this.total
+      }
     };
   },
   computed: {
     searchEnabled() { return this.options.search || false; },
     searchLabel() { return this.options.search_label || 'Cerca a la taula'; },
     density() {
-      if (this.options.dense && !this.options.density) return 'compact';
-      return this.options.density || null;
+      if (this.options.dense && !this.options.density) return 'comfortable';
+      return this.options.density || 'comfortable';
     },
-    sortBy() { return this.options.sort_by || null; },
-    sortDesc() { return this.options.sort_desc || false; },
     tableHeight() { return this.options.height || null; },
-
-    // Maqueta els headers incloent les accions si cal
     computedHeaders() {
       const headers = this.columns.map(col => ({
-        title: col.label,
-        key: col.key
+        name: col.key,
+        label: col.label,
+        field: col.key,
+        sortable: true
       }));
       if (this.rows.length > 0 && this.rows[0].actions !== undefined) {
-        headers.push({ title: 'Accions', key: 'actions', sortable: false, align: 'center' });
+        headers.push({ name: 'actions', label: 'Accions', field: 'actions', sortable: false, align: 'center' });
       }
       return headers;
     }
   },
+  watch: {
+    page(newPage) {
+      if (this.pagination.page !== newPage) {
+        this.pagination.page = newPage;
+      }
+    },
+    total(newTotal) {
+      this.pagination.rowsNumber = newTotal;
+    },
+    totalPages(newTotalPages) {
+      this.pagination.rowsPerPage = this.options.rowsPerPage || Math.max(1, Math.ceil(this.total / Math.max(newTotalPages, 1)));
+    },
+    'pagination.page'(newPage) {
+      this.updatePage(newPage);
+    }
+  },
   methods: {
-    // Escolta el canvi de pàgina de la barra nativa de Vuetify
     updatePage(newPage) {
-      // Si la pàgina coincideix amb l'actual, no fem res (evita bucles)
       if (newPage === this.page) return;
 
       const url = new URL(this.endpointUrlBase, window.location.origin);
       url.searchParams.set('page', newPage);
-
-      // Afegim els filtres existents a la URL
       Object.entries(this.filters).forEach(([key, val]) => {
         if (val !== null && val !== undefined && val !== '') {
           url.searchParams.set(key, val);
         }
       });
-
-      // Redirigim a la nova pàgina de Flask
       window.location.href = url.pathname + url.search;
     },
     handleAction(action) {
@@ -73,37 +86,34 @@ export default {
   },
   template: `
     <div>
-      <v-row class="g-4 mb-4" v-if="searchEnabled">
-        <v-col cols="12" md="4">
-          <v-text-field
+      <div class="row q-gutter-md mb-4" v-if="searchEnabled">
+        <div class="col-12 col-md-4">
+          <q-input
             v-model="tableSearch"
             :label="searchLabel"
             clearable
-            append-inner-icon="mdi-magnify"
-            density="comfortable"
-            hide-details
-          ></v-text-field>
-        </v-col>
-      </v-row>
+            append-icon="search"
+            dense
+          />
+        </div>
+      </div>
 
-      <v-data-table-server
-        :headers="computedHeaders"
-        :items="rows"
-        :items-length="total"
-        :page="page"
-        class="border-sm"
-        :density="density"
-        :search="searchEnabled ? tableSearch : ''"
-        :height="tableHeight"
-        @update:page="updatePage"
+      <q-table
+        :columns="computedHeaders"
+        :rows="rows"
+        row-key="id"
+        :pagination.sync="pagination"
+        :filter="searchEnabled ? tableSearch : ''"
+        flat
+        dense
       >
-        <template #item.actions="{ item }">
+        <template v-slot:body-cell-actions="props">
           <admin-table-actions
-            :actions="item.actions"
+            :actions="props.row.actions"
             @action-click="handleAction"
-          ></admin-table-actions>
+          />
         </template>
-      </v-data-table-server>
+      </q-table>
     </div>
   `
 };

@@ -1,20 +1,22 @@
 <template>
-  <v-app>
-    <v-app-bar color="primary" density="compact">
-      <v-app-bar-title>Atles</v-app-bar-title>
-    </v-app-bar>
+  <q-layout view="hHh lpR fFf">
+    <q-header elevated class="bg-primary text-white">
+      <q-toolbar>
+        <q-toolbar-title>Atles</q-toolbar-title>
+      </q-toolbar>
+    </q-header>
 
-    <v-main>
+    <q-page-container>
       <router-view />
-    </v-main>
+    </q-page-container>
 
-    <v-footer app color="grey-lighten-1" density="compact">
-      <v-row justify="center" no-gutters>
-        <v-btn variant="text" class="mx-2">About</v-btn>
-        <v-btn variant="text" class="mx-2">Contacte</v-btn>
-      </v-row>
-    </v-footer>
-  </v-app>
+    <q-footer elevated class="bg-grey-3">
+      <div class="row items-center justify-center q-pa-sm">
+        <q-btn flat class="mx-sm" label="About" />
+        <q-btn flat class="mx-sm" label="Contacte" />
+      </div>
+    </q-footer>
+  </q-layout>
 </template>
 
 <script setup>

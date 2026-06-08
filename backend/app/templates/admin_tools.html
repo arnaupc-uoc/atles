@@ -7,42 +7,42 @@
 {% endblock %}
 
 {% block content %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-title>Eines</v-card-title>
-  <v-card-text>Accedeix a les eines i utilitats disponibles per a administradors.</v-card-text>
-</v-card>
+<q-card elevation="2" class="q-pa-lg q-mb-lg">
+  <q-card-section class="text-h6">Eines</q-card-section>
+  <q-card-section>Accedeix a les eines i utilitats disponibles per a administradors.</q-card-section>
+</q-card>
 
-<v-row class="g-4">
-  <v-col cols="12" md="4">
-    <v-card elevation="2" class="pa-4 h-100">
-      <v-card-title>Backups</v-card-title>
-      <v-card-text>Crear, descarregar i restaurar còpies de seguretat de la base de dades.</v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" href="{{ url_for('admin.tools_backups') }}">Accedir</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-col>
+<div class="row q-gutter-md">
+  <div class="col-12 col-md-4">
+    <q-card elevation="2" class="q-pa-md q-h-100">
+      <q-card-section class="text-h6">Backups</q-card-section>
+      <q-card-section>Crear, descarregar i restaurar còpies de seguretat de la base de dades.</q-card-section>
+      <q-card-actions>
+        <q-btn color="primary" unelevated href="{{ url_for('admin.tools_backups') }}" label="Accedir" />
+      </q-card-actions>
+    </q-card>
+  </div>
 
-  <v-col cols="12" md="4">
-    <v-card elevation="2" class="pa-4 h-100">
-      <v-card-title>Accessos usuaris</v-card-title>
-      <v-card-text>Veure registres d'accessos i auditories d'autenticació.</v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" href="{{ url_for('admin.tools_accessos') }}">Accedir</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-col>
+  <div class="col-12 col-md-4">
+    <q-card elevation="2" class="q-pa-md q-h-100">
+      <q-card-section class="text-h6">Accessos usuaris</q-card-section>
+      <q-card-section>Veure registres d'accessos i auditories d'autenticació.</q-card-section>
+      <q-card-actions>
+        <q-btn color="primary" unelevated href="{{ url_for('admin.tools_accessos') }}" label="Accedir" />
+      </q-card-actions>
+    </q-card>
+  </div>
 
-  <v-col cols="12" md="4">
-    <v-card elevation="2" class="pa-4 h-100">
-      <v-card-title>Logs</v-card-title>
-      <v-card-text>Visualitzar i exportar els logs del sistema.</v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" href="{{ url_for('admin.tools_logs') }}">Accedir</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-col>
-</v-row>
+  <div class="col-12 col-md-4">
+    <q-card elevation="2" class="q-pa-md q-h-100">
+      <q-card-section class="text-h6">Logs</q-card-section>
+      <q-card-section>Visualitzar i exportar els logs del sistema.</q-card-section>
+      <q-card-actions>
+        <q-btn color="primary" unelevated href="{{ url_for('admin.tools_logs') }}" label="Accedir" />
+      </q-card-actions>
+    </q-card>
+  </div>
+</div>
 
-<v-btn variant="tonal" color="secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</v-btn>
+<q-btn flat color="secondary" href="{{ url_for('admin.home') }}" label="Tornar a l'inici" />
 {% endblock %}

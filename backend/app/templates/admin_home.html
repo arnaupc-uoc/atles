@@ -7,34 +7,34 @@
 {% endblock %}
 
 {% block content %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-title class="text-h5">Benvingut/da, {{ user.username }}</v-card-title>
-  <v-card-subtitle>Rol: <strong>{{ role }}</strong></v-card-subtitle>
-  <v-card-text>Selecciona una secció per començar a gestionar el contingut.</v-card-text>
-</v-card>
+<q-card elevation="2" class="q-pa-lg q-mb-lg">
+  <q-card-section class="text-h5">Benvingut/da, {{ user.username }}</q-card-section>
+  <q-card-section>Rol: <strong>{{ role }}</strong></q-card-section>
+  <q-card-section>Selecciona una secció per començar a gestionar el contingut.</q-card-section>
+</q-card>
 
 {% if sections %}
-<v-row class="g-4">
+<div class="row q-gutter-md">
   {% set order = ['Regions', 'Publicacions', 'Autors', 'Pàgines', 'Usuaris', 'Eines'] %}
   {% for title in order %}
     {% for section in sections %}
       {% if section.title == title %}
-      <v-col cols="12" md="4">
-        <v-card elevation="2" class="pa-4 h-100">
-          <v-card-title>{{ section.title }}</v-card-title>
-          <v-card-text>{{ section.description }}</v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" href="{{ section.path }}">Accedir</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
+      <div class="col-12 col-md-4">
+        <q-card elevation="2" class="q-pa-md q-h-100">
+          <q-card-section class="text-h6">{{ section.title }}</q-card-section>
+          <q-card-section>{{ section.description }}</q-card-section>
+          <q-card-actions>
+            <q-btn color="primary" unelevated href="{{ section.path }}" label="Accedir" />
+          </q-card-actions>
+        </q-card>
+      </div>
       {% endif %}
     {% endfor %}
   {% endfor %}
-</v-row>
+</div>
 {% else %}
-<v-card elevation="2" class="pa-6">
-  <v-card-text>No tens accés a cap secció amb el teu rol actual.</v-card-text>
-</v-card>
+<q-card elevation="2" class="q-pa-lg">
+  <q-card-section>No tens accés a cap secció amb el teu rol actual.</q-card-section>
+</q-card>
 {% endif %}
 {% endblock %}

@@ -3,20 +3,65 @@
 {% block title %}Login - Atles Administració{% endblock %}
 
 {% block content %}
-<v-card elevation="2" class="pa-6 mx-auto" style="max-width: 520px;">
-  <v-card-title>Iniciar sessió</v-card-title>
+<q-card elevation="2" class="q-pa-lg q-mx-auto" style="max-width: 520px;">
+  <q-card-section class="text-h6">Iniciar sessió</q-card-section>
   {% if error %}
-    <v-alert type="error" class="mb-4" prominent>{{ error }}</v-alert>
+    <div class="q-pa-md q-mb-md bg-red-3 text-white rounded-borders">{{ error }}</div>
   {% endif %}
   <form method="post">
-    <v-text-field id="username" name="username" label="Usuari" required autofocus></v-text-field>
-    <v-text-field id="password" name="password" label="Contrasenya" type="password" required></v-text-field>
-    <v-card-actions class="pt-4">
-      <v-btn color="primary" type="submit">Entrar</v-btn>
-    </v-card-actions>
+    <q-input
+      id="username"
+      name="username"
+      v-model="username"
+      label="Usuari"
+      required
+      autofocus
+    ></q-input>
+    <q-input
+      id="password"
+      name="password"
+      v-model="password"
+      label="Contrasenya"
+      type="password"
+      required
+    ></q-input>
+    <q-card-actions class="q-pt-md">
+      <q-btn
+        color="primary"
+        unelevated
+        type="submit"
+        label="Entrar"
+      ></q-btn>
+    </q-card-actions>
   </form>
 
-  <v-card-subtitle class="mt-4">Usuari per defecte: <strong>admin</strong> / contrasenya: <strong>admin</strong></v-card-subtitle>
-  <v-btn variant="text" href="{{ url_for('admin.recover_password') }}">Has oblidat la contrasenya?</v-btn>
-</v-card>
+  <div class="text-subtitle2 q-mt-md">
+    Usuari per defecte: <strong>admin</strong> / contrasenya: <strong>admin</strong>
+  </div>
+  <q-btn
+    flat
+    href="{{ url_for('admin.recover_password') }}"
+    label="Has oblidat la contrasenya?"
+    class="q-mt-sm"
+  ></q-btn>
+</q-card>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const { createApp, ref } = Vue
+
+  createApp({
+    setup() {
+      // Creem les variables reactives que guardaran el contingut dels inputs
+      const username = ref('')
+      const password = ref('')
+
+      return {
+        username,
+        password
+      }
+    }
+  }).use(Quasar).mount('#q-app')
+</script>
 {% endblock %}

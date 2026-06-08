@@ -7,38 +7,41 @@
 {% endblock %}
 
 {% block content %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-title>Backups</v-card-title>
-  <v-card-text>Gestió de còpies de seguretat: crear, descarregar i restaurar backups de la base de dades.</v-card-text>
-  <v-card-actions>
+<q-card elevation="2" class="q-pa-lg q-mb-lg">
+  <q-card-section class="text-h6">Backups</q-card-section>
+  <q-card-section>Gestió de còpies de seguretat: crear, descarregar i restaurar backups de la base de dades.</q-card-section>
+  <q-card-actions>
     <form method="post" action="{{ url_for('admin.tools_backups_create') }}">
-      <v-btn color="primary" type="submit">Crear backup</v-btn>
+      <q-btn color="primary" unelevated type="submit" label="Crear backup" />
     </form>
-  </v-card-actions>
-</v-card>
+  </q-card-actions>
+</q-card>
 
 {% if files %}
-<v-card elevation="2" class="pa-4 mb-6">
-  <v-data-table
-    :headers='[ { text: "Nom", value: "name" }, { text: "Data", value: "mtime" }, { text: "Mida", value: "size" }, { text: "Accions", value: "actions" } ]'
-    :items='[ {% for f in files %}{ name: "{{ f.name | e }}", mtime: "{{ f.mtime }}", size: "{{ (f.size / 1024) | round(1) }} KB", actions: "" }{% if not loop.last %}, {% endif %}{% endfor %} ]'
-    class="elevation-1"
-    hide-default-footer
+<q-card elevation="2" class="q-pa-md q-mb-lg">
+  <q-table
+    dense
+    flat
+    :columns='[ { name: "name", label: "Nom", field: "name" }, { name: "mtime", label: "Data", field: "mtime" }, { name: "size", label: "Mida", field: "size" }, { name: "actions", label: "Accions", field: "actions", sortable: false, align: "center" } ]'
+    :rows='[ {% for f in files %}{ name: "{{ f.name | e }}", mtime: "{{ f.mtime }}", size: "{{ (f.size / 1024) | round(1) }} KB", actions: "" }{% if not loop.last %}, {% endif %}{% endfor %} ]'
+    row-key="name"
   >
-    <template #item.actions="{ item }">
-      <v-btn variant="tonal" size="small" :href="`{{ url_for('admin.tools_backups_download', filename='') }}/${item.name}`">Descarregar</v-btn>
-      <form method="post" action="{{ url_for('admin.tools_backups_restore') }}" style="display:inline">
-        <input type="hidden" name="filename" :value="item.name" />
-        <v-btn variant="tonal" size="small" type="submit">Restaurar</v-btn>
-      </form>
+    <template v-slot:body-cell-actions="props">
+      <div class="row items-center justify-center q-gutter-sm">
+        <q-btn flat dense color="primary" :href="`{{ url_for('admin.tools_backups_download', filename='') }}/${props.row.name}`" label="Descarregar" />
+        <form method="post" action="{{ url_for('admin.tools_backups_restore') }}" style="display:inline-flex; align-items:center;">
+          <input type="hidden" name="filename" :value="props.row.name" />
+          <q-btn flat dense color="secondary" type="submit" label="Restaurar" class="q-ml-sm" />
+        </form>
+      </div>
     </template>
-  </v-data-table>
-</v-card>
+  </q-table>
+</q-card>
 {% else %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-text>No s'han trobat backups.</v-card-text>
-</v-card>
+<q-card elevation="2" class="q-pa-lg q-mb-lg">
+  <q-card-section>No s'han trobat backups.</q-card-section>
+</q-card>
 {% endif %}
 
-<v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</v-btn>
+<q-btn flat color="secondary" href="{{ url_for('admin.tools') }}" label="Tornar a Eines" />
 {% endblock %}

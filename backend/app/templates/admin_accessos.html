@@ -7,81 +7,82 @@
 {% endblock %}
 
 {% block content %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-title>Accessos usuaris</v-card-title>
-  <v-card-text>Registre d'accessos d'usuaris i auditories. Aquí podràs filtrar per usuari, data i resultat d'autenticació.</v-card-text>
+<q-card elevation="2" class="q-pa-lg q-mb-lg">
+  <q-card-section class="text-h6">Accessos usuaris</q-card-section>
+  <q-card-section>Registre d'accessos d'usuaris i auditories. Aquí podràs filtrar per usuari, data i resultat d'autenticació.</q-card-section>
 
-  <form method="get" action="{{ url_for('admin.tools_accessos') }}" class="mt-4">
-    <v-row class="g-4">
-      <v-col cols="12" md="3">
-        <v-text-field
+  <form method="get" action="{{ url_for('admin.tools_accessos') }}" class="q-mt-lg">
+    <div class="row q-gutter-md">
+      <div class="col-12 col-md-3">
+        <q-input
           name="username"
           label="Usuari"
           v-model="filters.username"
           clearable
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-text-field
+        />
+      </div>
+      <div class="col-12 col-md-3">
+        <q-input
           name="from"
           label="From (ISO)"
           v-model="filters['from']"
           clearable
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-text-field
+        />
+      </div>
+      <div class="col-12 col-md-3">
+        <q-input
           name="to"
           label="To (ISO)"
           v-model="filters.to"
           clearable
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-select
+        />
+      </div>
+      <div class="col-12 col-md-3">
+        <q-select
           name="success"
           label="Resultat"
-          :items='[
-            { title: "Tots", value: "" },
-            { title: "OK", value: "1" },
-            { title: "Fallit", value: "0" }
+          :options='[
+            { label: "Tots", value: "" },
+            { label: "OK", value: "1" },
+            { label: "Fallit", value: "0" }
           ]'
-          item-title="title"
-          item-value="value"
+          option-label="label"
+          option-value="value"
           v-model="filters.success"
           clearable
-        ></v-select>
-      </v-col>
-    </v-row>
-    <v-row class="g-4 mt-4">
-      <v-col cols="12" md="4">
-        <v-btn color="primary" type="submit">Filtrar</v-btn>
-        <v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools_accessos', export='csv') }}">Exportar CSV</v-btn>
-      </v-col>
-    </v-row>
+        />
+      </div>
+    </div>
+    <div class="row q-gutter-sm q-mt-lg">
+      <div class="col-12 col-md-4">
+        <q-btn color="primary" unelevated type="submit" label="Filtrar" />
+        <q-btn flat color="secondary" href="{{ url_for('admin.tools_accessos', export='csv') }}" label="Exportar CSV" class="q-ml-sm" />
+      </div>
+    </div>
   </form>
-</v-card>
+</q-card>
 
 {% if entries %}
-<v-card elevation="2" class="pa-4 mb-6">
-  <v-data-table
-    :headers='[ { text: "ID", value: "id" }, { text: "Usuari", value: "username" }, { text: "IP", value: "ip" }, { text: "Acció", value: "action" }, { text: "Success", value: "success" }, { text: "Data", value: "created_at" } ]'
-    :items='[ {% for e in entries %}{ id: {{ e.id }}, username: "{{ e.username | e }}", ip: "{{ e.ip }}", action: "{{ e.action | e }}", success: {{ 'true' if e.success else 'false' }}, created_at: "{{ e.created_at }}" }{% if not loop.last %}, {% endif %}{% endfor %} ]'
-    class="elevation-1"
-    hide-default-footer
+<q-card elevation="2" class="q-pa-md q-mb-lg">
+  <q-table
+    dense
+    flat
+    :columns='[ { name: "id", label: "ID", field: "id" }, { name: "username", label: "Usuari", field: "username" }, { name: "ip", label: "IP", field: "ip" }, { name: "action", label: "Acció", field: "action" }, { name: "success", label: "Success", field: "success" }, { name: "created_at", label: "Data", field: "created_at" } ]'
+    :rows='[ {% for e in entries %}{ id: {{ e.id }}, username: "{{ e.username | e }}", ip: "{{ e.ip }}", action: "{{ e.action | e }}", success: {{ 'true' if e.success else 'false' }}, created_at: "{{ e.created_at }}" }{% if not loop.last %}, {% endif %}{% endfor %} ]'
+    row-key="id"
   >
-    <template #item.success="{ item }">
-      {{ 'Sí' if item.success else 'No' }}
+    <template v-slot:body-cell-success="props">
+      <span v-text="props.row.success ? 'Sí' : 'No'"></span>
     </template>
-  </v-data-table>
-</v-card>
+  </q-table>
+</q-card>
 {% else %}
-<v-card elevation="2" class="pa-6 mb-6">
-  <v-card-text>No hi ha registres que coincideixin.</v-card-text>
-</v-card>
+<q-card elevation="2" class="q-pa-lg q-mb-lg">
+  <q-card-section>No hi ha registres que coincideixin.</q-card-section>
+</q-card>
 {% endif %}
 
-<v-btn variant="tonal" color="secondary" href="{{ url_for('admin.tools') }}">Tornar a Eines</v-btn>
+<q-btn flat color="secondary" href="{{ url_for('admin.tools') }}" label="Tornar a Eines" />
 {% endblock %}
 {% block script_data %}{{ {'filters': {
   'username': request.args.get('username', ''),

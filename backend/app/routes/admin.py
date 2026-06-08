@@ -445,19 +445,19 @@ def regions():
             {
                 "name": "edit",
                 "label": "Editar",
-                "icon": "mdi-pencil",
+                "icon": "edit",
                 "href": url_for("admin.regions", id=item.id, action="edit"),
             },
             {
                 "name": "view",
                 "label": "Visualitzar",
-                "icon": "mdi-eye",
+                "icon": "visibility",
                 "href": url_for("admin.regions", id=item.id, action="view"),
             },
             {
                 "name": "delete",
                 "label": "Eliminar",
-                "icon": "mdi-delete",
+                "icon": "delete",
                 "href": url_for("admin.regions", id=item.id, action="delete"),
             },
         ]

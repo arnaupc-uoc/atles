@@ -7,12 +7,12 @@
 {% endblock %}
 
 {% block content %}
-<v-card elevation="2" class="pa-6">
-  <v-card-title>{{ title }}</v-card-title>
-  <v-card-text>{{ description }}</v-card-text>
-  <v-card-text>Aquesta pàgina és un placeholder d'administració. Aquí es mostrarà la gestió de {{ title|lower }}.</v-card-text>
-  <v-card-actions>
-    <v-btn variant="tonal" color="secondary" href="{{ url_for('admin.home') }}">Tornar a l'inici</v-btn>
-  </v-card-actions>
-</v-card>
+<q-card elevation="2" class="q-pa-lg">
+  <q-card-section class="text-h6">{{ title }}</q-card-section>
+  <q-card-section>{{ description }}</q-card-section>
+  <q-card-section>Aquesta pàgina és un placeholder d'administració. Aquí es mostrarà la gestió de {{ title|lower }}.</q-card-section>
+  <q-card-actions>
+    <q-btn flat color="secondary" href="{{ url_for('admin.home') }}" label="Tornar a l'inici" />
+  </q-card-actions>
+</q-card>
 {% endblock %}
